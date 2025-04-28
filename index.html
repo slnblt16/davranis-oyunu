@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homojen ve Heterojen Karışımlar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .score-board {
+            font-size: 24px;
+            margin: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            background-color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .containers {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 30px 0;
+        }
+
+        .beaker {
+            width: 200px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 3px solid #666;
+            border-radius: 10px 10px 30px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50%;
+            background-color: #c5e8ff;
+            transition: all 0.5s;
+        }
+
+        .top-layer {
+            position: absolute;
+            width: 100%;
+            height: 0;
+            top: 50%;
+            transition: all 0.5s;
+        }
+
+        .bottom-layer {
+            position: absolute;
+            width: 100%;
+            height: 0;
+            bottom: 0;
+            transition: all 0.5s;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+        }
+
+        .star {
+            position: absolute;
+            color: gold;
+            font-size: 30px;
+            animation: float 2s ease-out;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-200px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .small-beakers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .small-beaker {
+            width: 80px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 2px solid #666;
+            border-radius: 5px 5px 15px 15px;
+            cursor: move;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            transition: transform 0.2s;
+        }
+
+        .small-beaker:hover {
+            transform: scale(1.1);
+        }
+
+        #message {
+            font-size: 24px;
+            color: #ff0000;
+            margin: 20px;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Homojen ve Heterojen Karışım Oluşturma</h1>
+    
+    <div class="score-board">Puan: <span id="score">0</span></div>
+    <div class="timer">Süre: <span id="countdown">60</span></div>
+
+    <div class="containers">
+        <div class="beaker" id="homogeneous">
+            <div class="liquid"></div>
+            <h3>Homojen Karışım</h3>
+        </div>
+        
+        <div class="beaker" id="heterogeneous">
+            <div class="top-layer"></div>
+            <div class="liquid"></div>
+            <div class="bottom-layer"></div>
+            <h3>Heterojen Karışım</h3>
+        </div>
+    </div>
+
+    <div class="small-beakers">
+        <div class="small-beaker" draggable="true" data-type="homogeneous" data-color="#FFFFFF">
+            <span style="color: #000">Tuz</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="homogeneous" data-color="#FF69B4">
+            <span style="color: #FF69B4">Gıda Boyası</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="heterogeneous" data-color="#8B4513">
+            <span style="color: #8B4513">Talaş</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="heterogeneous" data-color="#FFE4B5">
+            <span style="color: #8B4513">Makarna</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="homogeneous" data-color="#FFFFFF">
+            <span style="color: #000">Şeker</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="heterogeneous" data-color="#FFD700">
+            <span style="color: #FFD700">Zeytin Yağı</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="homogeneous" data-color="#F0F8FF">
+            <span style="color: #000">Alkol</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="heterogeneous" data-color="#D2B48C">
+            <span style="color: #8B4513">Kum</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="heterogeneous" data-color="#FFF8DC">
+            <span style="color: #8B4513">Un</span>
+        </div>
+        <div class="small-beaker" draggable="true" data-type="homogeneous" data-color="#FFF5EE">
+            <span style="color: #000">Sirke</span>
+        </div>
+    </div>
+
+    <div id="message"></div>
+    <div class="stars"></div>
+
+    <audio id="applause" src="https://www.soundjay.com/human/applause-01.mp3" preload="auto"></audio>
+
+    <script>
+        let score = 0;
+        let timeLeft = 60;
+        const scoreElement = document.getElementById('score');
+        const countdownElement = document.getElementById('countdown');
+        const message = document.getElementById('message');
+        const applauseSound = document.getElementById('applause');
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdownElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                alert('Süre doldu! Puanınız: ' + score);
+                location.reload();
+            }
+        }, 1000);
+
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            starsContainer.innerHTML = '';
+            starsContainer.style.display = 'block';
+            
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.textContent = '★';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+
+            applauseSound.play().catch(e => console.log('Ses çalma hatası:', e));
+
+            setTimeout(() => {
+                starsContainer.style.display = 'none';
+            }, 2000);
+        }
+
+        document.querySelectorAll('.small-beaker').forEach(beaker => {
+            beaker.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify({
+                    type: beaker.dataset.type,
+                    color: beaker.dataset.color
+                }));
+            });
+        });
+
+        document.querySelectorAll('.beaker').forEach(beaker => {
+            beaker.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            beaker.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const isCorrectBeaker = (beaker.id === data.type);
+
+                if (isCorrectBeaker) {
+                    score += 20;
+                    message.textContent = '';
+                    createStars();
+
+                    if (data.type === 'homogeneous') {
+                        beaker.querySelector('.liquid').style.backgroundColor = data.color;
+                    } else {
+                        const topLayer = beaker.querySelector('.top-layer');
+                        const bottomLayer = beaker.querySelector('.bottom-layer');
+                        
+                        // Sadece talaş ve zeytin yağı üstte kalacak
+                        if (['#FFD700', '#8B4513'].includes(data.color)) {
+                            topLayer.style.backgroundColor = data.color;
+                            topLayer.style.height = '20%';
+                            beaker.querySelector('.liquid').style.backgroundColor = '#c5e8ff';
+                        } 
+                        // Diğer maddeler dibe çökecek
+                        else {
+                            bottomLayer.style.backgroundColor = data.color;
+                            bottomLayer.style.height = '20%';
+                            beaker.querySelector('.liquid').style.backgroundColor = '#c5e8ff';
+                        }
+                    }
+                } else {
+                    score -= 10;
+                    message.textContent = 'Tekrar deneyin!';
+                }
+
+                scoreElement.textContent = score;
+            });
+        });
+    </script>
+</body>
+</html>
